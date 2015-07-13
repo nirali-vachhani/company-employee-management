@@ -1,0 +1,10 @@
+nbproject
+.project
+.settings
+.buildpath
+.metadata
+Application/extras/templates_c/
+Application/extras/logs/
+Application/extras/attachments/
+DB
+Updates/

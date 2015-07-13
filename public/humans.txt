@@ -1,0 +1,16 @@
+# humanstxt.org/
+# The humans responsible & technology colophon
+
+# TEAM
+
+    Penuel -- Founder and Coder -- @penuelr
+
+# THANKS
+
+    <name>
+
+# TECHNOLOGY COLOPHON
+
+    PHP, MVC,
+    CSS3, HTML5,
+    Apache Server Configs, jQuery, Modernizr, Normalize.css

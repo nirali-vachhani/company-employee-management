@@ -1,0 +1,12 @@
+{if $error_list|count}
+<div class="alert alert-danger">
+    <p class="">
+        Following errors occurred.</p>
+    <ul>
+        {foreach from=$error_list item=message}
+        <li>{$message}</li>
+        {/foreach}
+
+    </ul>
+</div>
+{/if}
