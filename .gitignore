@@ -3,8 +3,8 @@ nbproject
 .settings
 .buildpath
 .metadata
-Application/extras/templates_c/
-Application/extras/logs/
-Application/extras/attachments/
-DB
-Updates/
+/Application/extras/templates_c/
+/Application/extras/logs/
+/Application/extras/attachments/
+/DB
+/Updates/
