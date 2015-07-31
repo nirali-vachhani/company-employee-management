@@ -5,7 +5,7 @@ $db; $dataCache;
 # set time zone
 if(defined('PHP_TIMEZONE_STRING') && PHP_TIMEZONE_STRING !='')
 {
-	date_default_timezone_set('UTC');
+	date_default_timezone_set(PHP_TIMEZONE_STRING);
 }
 
 
