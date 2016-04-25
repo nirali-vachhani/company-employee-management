@@ -148,10 +148,8 @@ class LMVC_View
 	}
 	
 	public function render(){
-		
-		$this->setupRenderer();
 					
-		$viewContent = $this->_viewRenderer->renderView();
+		$viewContent = $this->renderView();
 				
 		if(LMVC_Front::getInstance()->isLayoutEnabled())
 		{			
@@ -167,6 +165,14 @@ class LMVC_View
 	public function renderView(){
 		$this->setupRenderer();
 		return $this->_viewRenderer->renderView();		
+	}
+	
+	public function renderViewFragment($_viewFragmentDir, $_viewFragmentFile, $_viewFragmentVars = array())
+	{
+		
+		$fullViewVars = $this->getViewVars();
+		$viewVars = array_merge($_viewFragmentVars, array('view_vars'=> $fullViewVars));		
+		return $this->_viewRenderer->renderViewFragment($_viewFragmentDir, $_viewFragmentFile, $viewVars);
 	}
 	
 	private function setupRenderer(){

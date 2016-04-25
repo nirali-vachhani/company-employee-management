@@ -230,17 +230,15 @@ abstract class LMVC_ActiveRecord {
 	}
 
 	public static function insertMultiple($tableName, $fields, $data) {
-
-		$field_list = implode(",", $fields);
-
-		$value_list = rtrim(str_repeat("?,", count($fields)), ",");
-
-		$sql = "INSERT INTO $tableName ($field_list) VALUES (" . $value_list . ")";
-
-		$sth = self::$db->prepare($sql);
-
-		$res = self::$db->executeMultiple($sth, $data);
-
+		
+		foreach($data as $row)
+		{
+			foreach($fields as $key=>$field)
+			{
+				$field_values[$field] =  $row[$key];
+			}
+			$res = self::$db->insert($tableName,$field_values);	
+		}		
 		return true;
 	}
 

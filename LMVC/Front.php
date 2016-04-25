@@ -234,6 +234,10 @@ class LMVC_Front {
 
 						$layoutObj = LMVC_Layout::getInstance();
 
+						//registered early so that view fragments can also acccess these view vars if needed.
+						$viewObj->setViewVar('path_info', $pathInfo);
+						$viewObj->setViewVars($this->getPreDispatchVars());  #set the var values from the pre-dispatch plugins							
+
 						
 						call_user_func(array($controllerObj, $_actionName)); #call action
 
@@ -272,12 +276,9 @@ class LMVC_Front {
 									$viewObj->setLayoutDir($layoutDir);
 									$viewObj->setLayout($layout);
 								}
-
 								if (file_exists($viewDir . "/" . $viewFile)) {
 									$viewObj->setViewDir($viewDir);
 									$viewObj->setViewFile($viewFile);
-									$viewObj->setViewVar('path_info', $pathInfo);
-									$viewObj->setViewVars($this->getPreDispatchVars());  #set the var values from the pre-dispatch plugins
 									$viewObj->render();
 								} else {
 									trigger_error("Required View file ($viewFile) not found at $viewDir", E_USER_ERROR);

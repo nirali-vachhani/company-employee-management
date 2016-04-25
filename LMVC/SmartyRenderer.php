@@ -73,10 +73,21 @@ class LMVC_SmartyRenderer extends ViewRenderer{
 		foreach($viewVars as $var=>$val){
 			$this->_smarty->assign($var,$val);
 		}
-
 		return $this->_smarty->fetch($this->getViewFile());
 
 	}
+	
+	public function renderViewFragment($_viewFragmentDir, $_viewFragmentFile, $_viewFragmentVars)
+	{
+		$this->_smarty->template_dir = $_viewFragmentDir;
+		$viewVars = $_viewFragmentVars;
+		foreach($viewVars as $var=>$val){
+			$this->_smarty->assign($var,$val);
+		}
+		return $this->_smarty->fetch($_viewFragmentFile);
+		
+	}
+	
 	public function renderLayout($_viewContent)
 	{
 		$this->_smarty->template_dir = $this->getLayoutDir();

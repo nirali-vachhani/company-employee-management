@@ -40,6 +40,19 @@ final class LMVC_ViewHelperBroker {
     public function getHelpers() {
         return $this->_helpers;
     }
+    
+    public function getHelper($helper_name)
+    {
+   		foreach ($this->_helpers as $_helper) {
+   			
+   			if($_helper->getHelperName() == $helper_name)
+   			{
+   				return $_helper;
+   			}            
+        }	
+        
+        return false;
+    }
 
     public function registerToRenderer($_viewRenderer) {
 

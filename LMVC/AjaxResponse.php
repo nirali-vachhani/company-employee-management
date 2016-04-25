@@ -44,7 +44,7 @@ class LMVC_AjaxResponse
 		
 		if("json" == $this->responseType)
 		{
-			header('Content-type','application/json');
+			header('Content-type: application/json');
 			echo json_encode($response);
 		}
 		else

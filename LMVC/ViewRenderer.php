@@ -11,6 +11,8 @@ abstract class ViewRenderer {
 	
 	abstract public function renderView();
 	
+	abstract public function renderViewFragment($_viewDir,$_viewFile,$_viewVars);
+	
 	abstract public function renderLayout($_viewContent);
 	
 	abstract public function getRenderer();

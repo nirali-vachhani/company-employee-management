@@ -126,10 +126,7 @@ abstract class LMVC_Controller
 	}
 
 
-	final public function foward($_action, $_controller = "", $_module = "", $_params = array())
-	{
-		$this->forward($_action, $_controller , $_module , $_params);
-	}
+	
 
 	final public function forward($_action, $_controller = "", $_module = "", $_params = array())
 	{
@@ -169,6 +166,14 @@ abstract class LMVC_Controller
 			trigger_error("Helper not registered",E_USER_NOTICE);
 		}
 	}
+	
+	final public function getViewHelper($helper_name)
+	{
+		return LMVC_ViewHelperBroker::getInstance()->getHelper($helper_name);
+		
+	}
+	
+	
 
 
 
