@@ -16,6 +16,14 @@ class LMVC_Request
 
 	private function __construct() {
 	}
+	
+	
+	/**
+	 * returns singleton LMVC_Request object
+	 * 
+	 * @return LMVC_Request
+	 * 
+	 */
 
 	public static function getInstance() {
 		if (!isset(self::$instance)) {
