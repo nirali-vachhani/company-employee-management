@@ -11,6 +11,8 @@ set_include_path(get_include_path() . PATH_SEPARATOR . APPLICATION_PATH);
 
 require(APPLICATION_PATH .'/ApplicationConfig.php');
 
+require(APPLICATION_PATH .'/functions.php');
+
 require('LMVC/Front.php');
 
 
