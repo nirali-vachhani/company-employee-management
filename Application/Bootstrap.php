@@ -19,26 +19,48 @@ LMVC_Session::init();
 
 #set directories
 $front->setApplicationDirectory(APPLICATION_PATH);
-$front->setControllerDirectory(array('admin'=>'/admin/controllers/'));
+$front->setControllerDirectory(array('admin'=>'/admin/controllers/','scripts'=>'/scripts/controllers/'));
+$front->setViewRenderer('Smarty');
+$front->setViewCaching(false);
+
+//user module uses the Default module layout..
+
+LMVC_Layout::getInstance()->setLayout('user', 'layouts');
 
 
 
-#regiser plugins
+#register plugins
 
-//$adminSessionValidator = new Plugins_AdminSessionValidator();
-//$front->registerPlugin($adminSessionValidator);
+/*
+$adminSessionValidator = new Plugins_AdminSessionValidator();
+$front->registerPlugin($adminSessionValidator);
 
-//$customerSessionValidator = new Plugins_CustomerSessionValidator();
-//$front->registerPlugin($customerSessionValidator);
+$userSessionValidator = new Plugins_UserSessionValidator();
+$front->registerPlugin($userSessionValidator);
+
+
+$languageSetter = new Plugins_LanguageSetter();
+$front->registerPlugin($languageSetter);
+*/
 
 //$front->registerViewHelper(new Helpers_Views_SuccessMessage());
-
-
-
-
-
 //$front->registerViewHelper(new Helpers_Views_Translator());
 
+
+//Registering for Tooltip helper
+//$front->registerViewHelper(new Helpers_Views_Tooltip());
+
+//$front->registerPlugin($customerSessionValidator);
+//$breadCrumbHelper = new Helpers_Views_BreadCrumb();
+//$front->registerViewHelper($breadCrumbHelper);
+
+
+//$menu = new Helpers_Views_Menu();
+//$front->registerViewHelper($menu);
+
+
+//$footer = new Helpers_Views_Footer();
+//$front->registerViewHelper($footer);
 //$front->registerViewHelper(new Helpers_Views_TranslatorFormatted());
 
 
@@ -66,119 +88,102 @@ $front->registerViewHelper(new Helpers_Views_FormatPrice());
 
 
 $router = LMVC_Router::getInstance();
-/*
-$router->addRoute('job_view_page',
-		new LMVC_Route('jobs/i/:id/s/:s',
-				array(
-						'module'=>'Default',
-						'controller'=>'job',
-						'action'=>'view'
-				)));
-*/
-	
-/*
-$router->addRoute('customer_account', new LMVC_RegExRoute('customer\/([^\/]+)\/([^\/]+)\/([^\/]+)\/?',
-		array(
-				'module' => 'customer',
-				'controller' => 'index',
-				'action' => 'index',
-				'regex_params' => array(1=>'guid',2=>'websiteKey',3=>'lang')
-		)));
 
-*/
 #routing
 /*
-$router = LMVC_Router::getInstance();
+# Edit wish list
+$router->addRoute('wishlist_edit', 
+	new LMVC_Route('wishlist/e/:key',
+ 		array(
+ 			'module'=>'Default',
+ 			'controller'=>'wishlist',
+ 			'action'=>'edit',
+ 		)));
 
-
-//designer/:designerName/:page/:shapes/:occasions/:styles/:sizes/:colors/:prices
-$router->addRoute('prod_list_designer', new LMVC_RegExRoute('designer\/([^\/]+)\/?(page-([0-9]{0,})\/?)?(md-([0-9,]{0,})\/?)?(shapes-([0-9,]{0,})\/?)?(occasions-([0-9,]{0,})\/?)?(cats-([0-9,]{0,})\/?)?(styles-([0-9,]{0,})\/?)?(sizes-([0-9,]{0,})\/?)?(colors-([0-9,]{0,})\/?)?(price-([0-9,]{0,})\/?)?(pp-([0-9]{0,})\/?)?(sort-([^\/]+)\/?)?',
-			array(
-				'module' => 'Default',
-				'controller' => 'productlist',
-				'action' => 'index',
-                'params' => array('mode'=>'designer'),
-                'regex_params' => array(1=>'designerName',3=>'page',5=>'md',7=>'shapes',9=>'occasions',11=>'cats',13=>'styles',15=>'sizes',17=>'colors',19=>'price', 21=> 'pp',23=>'sort')
+#View  wishlist
+$router->addRoute('wishlist_view',
+		new LMVC_Route('wishlist/v/:key',
+				array(
+						'module'=>'Default',
+						'controller'=>'wishlist',
+						'action'=>'view',
 				)));
 
-//search page
-$router->addRoute('search_page', new LMVC_RegExRoute('search\/([^\/]+)\/?(page-([0-9]{0,})\/?)?(md-([0-9,]{0,})\/?)?(shapes-([0-9,]{0,})\/?)?(occasions-([0-9,]{0,})\/?)?(cats-([0-9,]{0,})\/?)?(styles-([0-9,]{0,})\/?)?(sizes-([0-9,]{0,})\/?)?(colors-([0-9,]{0,})\/?)?(price-([0-9,]{0,})\/?)?(pp-([0-9]{0,})\/?)?(sort-([^\/]+)\/?)?',
-    array(
-        'module' => 'Default',
-        'controller' => 'productlist',
-        'action' => 'index',
-        'params' => array('mode'=>'search'),
-        'regex_params' => array(1=>'designerName',3=>'page',5=>'md',7=>'shapes',9=>'occasions',11=>'cats',13=>'styles',15=>'sizes',17=>'colors',19=>'price', 21=> 'pp',23=>'sort')
-    )));
+#Invalid wishlist
+$router->addRoute('wishlist_invalid',
+		new LMVC_Route('wishlist/i/:invalid',
+				array(
+						'module'=>'Default',
+						'controller'=>'wishlist',
+						'action'=>'invalid',
+				)));
 
-//new in page
-$router->addRoute('whatsnew_page', new LMVC_RegExRoute('newin\/?(page-([0-9]{0,})\/?)?(md-([0-9,]{0,})\/?)?(shapes-([0-9,]{0,})\/?)?(occasions-([0-9,]{0,})\/?)?(cats-([0-9,]{0,})\/?)?(styles-([0-9,]{0,})\/?)?(sizes-([0-9,]{0,})\/?)?(colors-([0-9,]{0,})\/?)?(price-([0-9,]{0,})\/?)?(pp-([0-9]{0,})\/?)?(sort-([^\/]+)\/?)?',
-    array(
-        'module' => 'Default',
-        'controller' => 'productlist',
-        'action' => 'index',
-        'params' => array('mode'=>'newin'),
-         'regex_params' => array(2=>'page',4=>'md',6=>'shapes',8=>'occasions',10=>'cats',12=>'styles',14=>'sizes',16=>'colors',18=>'price', 20=>'pp', 22=>'sort')
-    		)));
-    
-
-//on sale page
-$router->addRoute('sale_page', new LMVC_RegExRoute('sale\/?(page-([0-9]{0,})\/?)?(md-([0-9,]{0,})\/?)?(shapes-([0-9,]{0,})\/?)?(occasions-([0-9,]{0,})\/?)?(cats-([0-9,]{0,})\/?)?(styles-([0-9,]{0,})\/?)?(sizes-([0-9,]{0,})\/?)?(colors-([0-9,]{0,})\/?)?(price-([0-9,]{0,})\/?)?(pp-([0-9]{0,})\/?)?(sort-([^\/]+)\/?)?',
-    array(
-        'module' => 'Default',
-        'controller' => 'productlist',
-        'action' => 'index',
-        'params' => array('mode'=>'sale'),
-        'regex_params' => array(2=>'page',4=>'md',6=>'shapes',8=>'occasions',10=>'cats',12=>'styles',14=>'sizes',16=>'colors',18=>'price', 20=>'pp', 22=>'sort')
-    	
-    )));
-
-//newsletter page
-$router->addRoute('newsletter_page', new LMVC_RegExRoute('newsletter\/([^\/]+)\/?(page-([0-9]{0,})\/?)?(md-([0-9,]{0,})\/?)?(shapes-([0-9,]{0,})\/?)?(occasions-([0-9,]{0,})\/?)?(cats-([0-9,]{0,})\/?)?(styles-([0-9,]{0,})\/?)?(sizes-([0-9,]{0,})\/?)?(colors-([0-9,]{0,})\/?)?(price-([0-9,]{0,})\/?)?(pp-([0-9]{0,})\/?)?(sort-([^\/]+)\/?)?',
+#Successful create wishlist
+$router->addRoute('wishlist_success',
+	new LMVC_Route('wishlist/s/:success',
 		array(
-				'module' => 'Default',
-				'controller' => 'productlist',
-				'action' => 'index',
-				'params' => array('mode'=>'newsletter'),
-				'regex_params' => array(1=>'designerName',3=>'page',5=>'md',7=>'shapes',9=>'occasions',11=>'cats',13=>'styles',15=>'sizes',17=>'colors',19=>'price', 21=> 'pp',23=>'sort')
+			'module'=>'Default',
+			'controller'=>'wishlist',
+			'action'=>'success',
 		)));
 
 
-
-//mostpopular
-$router->addRoute('mostpopular_page', new LMVC_RegExRoute('mostpopular\/?(page-([0-9]{0,})\/?)?(md-([0-9,]{0,})\/?)?(shapes-([0-9,]{0,})\/?)?(cats-([0-9,]{0,})\/?)?(occasions-([0-9,]{0,})\/?)?(cats-([0-9,]{0,})\/?)?(styles-([0-9,]{0,})\/?)?(sizes-([0-9,]{0,})\/?)?(colors-([0-9,]{0,})\/?)?(price-([0-9,]{0,})\/?)?(pp-([0-9]{0,})\/?)?(sort-([^\/]+)\/?)?',
+#Successful registration
+$router->addRoute('manageproducts',
+	new LMVC_Route('wishlist/mp/:key',
 		array(
-				'module' => 'Default',
-				'controller' => 'productlist',
-				'action' => 'index',
-				'params' => array('mode'=>'mostpopular'),
-				'regex_params' => array(2=>'page',4=>'md',6=>'shapes',8=>'occasions',10=>'cats',12=>'styles',14=>'sizes',16=>'colors',18=>'price', 20=>'pp', 22=>'sort')
+			'module'=>'Default',
+			'controller'=>'wishlist',
+			'action'=>'manageproducts',
 		)));
 
-#cms pages
-$router->addRoute('cms_page',
-        new LMVC_Route('page/:urltag',
-        array(
-            'module'=>'Default',
-            'controller'=>'pages',
-            'action'=>'index'
-        )));
+#To display page
+$router->addRoute('page', new LMVC_RegExRoute('page\/(.*)\/?',
+		array(
+				'module' => 'Default',
+				'controller' => 'page',
+				'action' => 'index',
+				'regex_params' => array(1=>'pageslug')
+		)));
 */
+	
+function minify_callback($buffer)
+{
 
-/*
-#wishlist pages
-$router->addRoute('wishlist',
-    new LMVC_Route('wishlist/:page',
-        array(
-            'module'=>'Default',
-            'controller'=>'wishlist',
-            'action'=>'index'
-        )));		
-*/
+	$search = array(
+			'/\s+\/\/[^\n]+/s',  // strip whitespaces after tags, except space			
+	);
+	$replace = array(
+			''
+	);
+	$buffer = preg_replace($search, $replace, $buffer);
+	
+	$search = array(
+			'/\>[^\S ]+/s',  // strip whitespaces after tags, except space
+			'/[^\S ]+\</s',  // strip whitespaces before tags, except space
+			'/(\s)+/s'       // shorten multiple whitespace sequences
+	);
+
+	$replace = array(
+			'>',
+			'<',
+			'\\1'
+	);
+
+	$buffer = preg_replace($search, $replace, $buffer);
+
+	return $buffer;
+
+}
+
+ob_start('minify_callback');
+
 
 
 #dispatch now!
 $front->dispatch();
+
+
 
 //debug db+php time sync.
 /*
@@ -187,7 +192,8 @@ echo "DB: ".  $db->fetchOne("SELECT FROM_UNIXTIME(UNIX_TIMESTAMP(NOW()))") ."<br
 echo "PHP: ". date('Y-m-d H:i:s');
 die(); 
 
-*/			
+*/	
+
 
 #destroy
 unset($front);
