@@ -13,6 +13,8 @@ class LMVC_Request
 	private $getVars;
 	private $postVars;
 	private $requestVars;
+	private $isAjaxRequest = false;	//set to true if the custom header 'app-request-type' is set to 'ajax'
+	private $dataAlreadySanitized = false;
 
 	private function __construct() {
 	}
@@ -215,9 +217,30 @@ class LMVC_Request
 			return false;
 		}
 	}
+	
+	public function isAjaxRequest()
+	{
+		return $this->isAjaxRequest;
+	}
 
 	public function setupRequest($modules, $_extraParams = array(), $_routing=false) {
 		$this->sanitizeRequest();
+		
+		
+		//set type of request (ajax or regular request)		
+		
+		$headers = $this->getAllHeaders();
+		
+		$this->isAjaxRequest = false;
+		
+		
+		if(is_array($headers) && array_key_exists('app-request-type', $headers))
+		{
+			if($headers['app-request-type'] == 'ajax')
+			{
+				$this->isAjaxRequest = true;
+			}
+		}
 
 		if (empty($this->requestURI))
 			$this->requestURI = $_SERVER['REQUEST_URI'];
@@ -297,9 +320,12 @@ class LMVC_Request
 	}
 
 	public function sanitizeRequest() {
+		
+		if($this->dataAlreadySanitized == true) return;
 		array_walk_recursive($_POST, array($this, "doSanitization"));
 		array_walk_recursive($_GET, array($this, "doSanitization"));
 		array_walk_recursive($_REQUEST, array($this, "doSanitization"));
+		$this->dataAlreadySanitized = true;	//to prevent re-sanitizing data when routing..
 	}
 
 	private function doSanitization(& $item) {
@@ -307,7 +333,7 @@ class LMVC_Request
 			$item = addslashes($item);
 		}
 
-		$allowedTags = '<h1><h2><h3><h4><h5><h6><b><div><span><font><p><i><a><ul><ol><table><tr><td><li><pre><hr><blockquote><img><strong><br><small>';
+		$allowedTags = '<h1><h2><h3><h4><h5><h6><b><div><span><font><p><i><a><ul><ol><table><tr><td><li><pre><hr><blockquote><img><strong><br><small><button>';
 		$item = strip_tags($item, $allowedTags);
 	}
 
@@ -323,6 +349,33 @@ class LMVC_Request
 		}
 		return $path;
 	}
+	
+	
+	private function getAllHeaders() 
+    { 
+       $headers = array();
+        
+       if (function_exists('getallheaders')) //inbuilt php function exists.
+       {
+       		$headers = getallheaders();       	
+       }
+       else
+       {
+       		foreach ($_SERVER as $name => $value)
+	       	{
+	       		if (substr($name, 0, 5) == 'HTTP_')
+	       		{
+	       			$headers[str_replace(' ', '-', ucwords(str_replace('_', ' ', substr($name, 5))))] = $value;
+	       		}
+	       	}
+       }
+       
+       $headers = array_change_key_case($headers, CASE_LOWER);       
+       
+       return $headers; 
+    } 
+
+	
 
 }
 

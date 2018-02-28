@@ -24,6 +24,8 @@ class LMVC_Front {
 	private $layoutEnabled = true;
 	private static $_exceptionObj = null;
 	private $reroute = false;
+	private $viewRendererClassName = '';
+	private $viewCaching = false;
 
 	private function __construct() {
 		$pathToFront = dirname(__FILE__);
@@ -61,6 +63,29 @@ class LMVC_Front {
 		$this->directories = $_directories;
 	}
 
+	public function setViewRenderer($_name)
+	{
+		$this->viewRendererClassName = $_name;
+		
+		#init View object.
+		$viewObj = LMVC_View::getInstance($this->viewRendererClassName);
+		
+		$viewObj->setViewCaching($this->viewCaching);
+		
+		self::$_viewObj = $viewObj;
+		
+	}
+	public function setViewCaching($_caching)
+	{
+		$this->viewCaching = $_caching;		
+		if(is_a(self::$_viewObj, 'LMVC_View'))
+		{
+			self::$_viewObj->setViewCaching($this->viewCaching);
+		}
+		
+		
+		
+	}
 	public function setNoRenderer($_noRenderer) {
 		$this->noRenderer = $_noRenderer;
 	}
@@ -143,9 +168,9 @@ class LMVC_Front {
 		$params = self::$_requestObj->getParams();
 
 
-		#init View object.
-		$viewObj = LMVC_View::getInstance();
-		self::$_viewObj = $viewObj;
+		
+		
+		
 
 
 		$this->currentControllerDir = "/controllers"; //default controller dir
@@ -229,14 +254,14 @@ class LMVC_Front {
 						#register any view helpers
 						if (is_object($this->_viewHelperBroker) && count($this->_viewHelperBroker->getHelpers())>0) {
 
-							$this->_viewHelperBroker->registerToRenderer($viewObj->getViewRenderer());
+							$this->_viewHelperBroker->registerToRenderer(self::$_viewObj->getViewRenderer());
 						}
 
 						$layoutObj = LMVC_Layout::getInstance();
 
 						//registered early so that view fragments can also acccess these view vars if needed.
-						$viewObj->setViewVar('path_info', $pathInfo);
-						$viewObj->setViewVars($this->getPreDispatchVars());  #set the var values from the pre-dispatch plugins							
+						self::$_viewObj->setViewVar('path_info', $pathInfo);
+						self::$_viewObj->setViewVars($this->getPreDispatchVars());  #set the var values from the pre-dispatch plugins							
 
 						
 						call_user_func(array($controllerObj, $_actionName)); #call action
@@ -247,7 +272,7 @@ class LMVC_Front {
 							$layout = $layoutObj->getLayoutFile($moduleName);
 
 
-							if ($viewObj->getViewDir() == "") { #detect view directory based on current module,controller and action
+							if (self::$_viewObj->getViewDir() == "") { #detect view directory based on current module,controller and action
 								$viewDir = $this->applicationDir;
 								if ($moduleName != "Default") {
 									$viewDir .= "/" . $moduleName;
@@ -260,7 +285,7 @@ class LMVC_Front {
 								$viewDir = $viewObj->getViewDir();
 							}
 
-							if ($viewObj->getViewFile() == "") {
+							if (self::$_viewObj->getViewFile() == "") {
 								$viewFile = $actionName . ".html"; #default to current action name
 							} else {
 								$viewFile = $viewObj->getViewFile() . ".html"; #useful if you want to render another view for current action
@@ -273,13 +298,13 @@ class LMVC_Front {
 
 
 								if ($this->isLayoutEnabled()) {
-									$viewObj->setLayoutDir($layoutDir);
-									$viewObj->setLayout($layout);
+									self::$_viewObj->setLayoutDir($layoutDir);
+									self::$_viewObj->setLayout($layout);
 								}
 								if (file_exists($viewDir . "/" . $viewFile)) {
-									$viewObj->setViewDir($viewDir);
-									$viewObj->setViewFile($viewFile);
-									$viewObj->render();
+									self::$_viewObj->setViewDir($viewDir);
+									self::$_viewObj->setViewFile($viewFile);
+									self::$_viewObj->render();
 								} else {
 									trigger_error("Required View file ($viewFile) not found at $viewDir", E_USER_ERROR);
 								}

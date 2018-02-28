@@ -1,6 +1,6 @@
 <?php
 require('Libs/Smarty/Smarty.class.php');
-class LMVC_SmartyRenderer extends ViewRenderer{
+class LMVC_SmartyRenderer extends LMVC_ViewRenderer{
 
 	private $_smarty;
 	private static $instance;
@@ -57,13 +57,26 @@ class LMVC_SmartyRenderer extends ViewRenderer{
 
 	public function setCaching($_mode)
 	{
-		$this->_smarty->force_compile = !$_mode;
-		$this->_smarty->caching = $_mode;
+		
+		if($_mode == true)
+		{
+			$this->_smarty->caching = 1;
+		}
+		else
+		{
+			$this->_smarty->caching = 0;
+		}
+		
 	}
 
 	public function clearCache()
 	{
 		$this->_smarty->clear_all_cache();
+	}
+	
+	public function clearCompiledTemplates()
+	{
+		$this->_smarty->clear_compiled_tpl();
 	}
 
 	public function renderView(){
@@ -92,6 +105,7 @@ class LMVC_SmartyRenderer extends ViewRenderer{
 	{
 		$this->_smarty->template_dir = $this->getLayoutDir();
 		$this->_smarty->assign('view_content',$_viewContent);
+		
 		return $this->_smarty->fetch($this->getLayout());
 	}
 

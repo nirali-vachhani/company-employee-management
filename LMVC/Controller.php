@@ -96,7 +96,8 @@ abstract class LMVC_Controller
 		}
 		else
 		{
-			array_push($this->_actionErrors,$err_msg);
+			if(!empty($err_msg))
+				array_push($this->_actionErrors,$err_msg);
 		}
 
 	}

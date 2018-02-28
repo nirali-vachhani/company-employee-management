@@ -313,9 +313,9 @@ class LMVC_DataTables {
                     }
                 }
             }
-            $output['aaData'][] = $row;
+            $output['aaData'][] = array_map('htmlentities',$row);
         }
-        return json_encode($output);
+        return html_entity_decode(json_encode($output));
     }
 
 }

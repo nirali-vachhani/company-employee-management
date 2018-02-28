@@ -12,23 +12,33 @@ class LMVC_View
 	private $_stylesheets = array();
 	private $_headerScripts = array();
 	private $_footerScripts = array();
+	private $_viewCaching = false;
 	
 	
 	private function __construct(){}
 	
-	final public static function getInstance(){
+	final public static function getInstance($className=''){
 		if (!isset(self::$instance)) {
+			
+			if(empty($className))
+			{
+				trigger_error('Required renderer class name not specified. Renderer must be registered with $front in bootstrap.php', E_USER_ERROR);				
+			}
+			
 			$c = __CLASS__;
 			self::$instance = new $c;
-			self::$instance->init();
+			self::$instance->init($className);
 		}
 		return self::$instance;
 	}
 	
-	private function init(){
+	private function init($className){
 		$this->_viewVars = array();	
-		$this->setViewRenderer(LMVC_SmartyRenderer::getInstance());
+		$className = 'LMVC_'.$className.'Renderer';
+		$this->setViewRenderer($className::getInstance());
 	}
+	
+	
 	
 	public function setViewRenderer($_viewRenderer){
 		if(isset($this->_viewRenderer)){
@@ -38,6 +48,12 @@ class LMVC_View
 		$this->setupRenderer();
 		$this->_viewRenderer->init();		
 	}	
+	
+	public function setViewCaching($_caching)
+	{
+		$this->_viewCaching = $_caching;
+		$this->getViewRenderer()->setCaching($_caching);
+	}
 	
 	public function getViewRenderer()
 	{

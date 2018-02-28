@@ -1,5 +1,5 @@
 <?php
-abstract class ViewRenderer {
+abstract class LMVC_ViewRenderer {
 	
 	private $_viewFile;
 	private $_viewDir;
@@ -8,6 +8,10 @@ abstract class ViewRenderer {
 	private $_viewVars;	
 		
 	abstract public function init();
+	
+	abstract public function setCaching($_caching);
+	
+	abstract public function clearCache();
 	
 	abstract public function renderView();
 	
@@ -18,6 +22,7 @@ abstract class ViewRenderer {
 	abstract public function getRenderer();
 	
 	abstract public function registerHelper($_helper);
+	
 	
 	final public function render(){}
 	
